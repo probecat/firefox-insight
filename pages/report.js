@@ -137,4 +137,25 @@ $('btn-exclude-domain').addEventListener('click', async (e) => {
 
 window.addEventListener('popstate', () => location.reload());
 
+// The timer overlay needs access to all websites, which Firefox grants only on request.
+const ALL_SITES = { origins: ['*://*/*'] };
+const showTimer = $('show-timer');
+
+async function loadShowTimer() {
+  const { isShowTimer } = await browser.storage.local.get('isShowTimer');
+  showTimer.checked = Boolean(isShowTimer) && (await browser.permissions.contains(ALL_SITES));
+}
+
+showTimer.addEventListener('change', async () => {
+  // permissions.request must run before any other await to keep the user gesture.
+  if (showTimer.checked && !(await browser.permissions.request(ALL_SITES))) {
+    showTimer.checked = false;
+    return;
+  }
+  await browser.storage.local.set({ isShowTimer: showTimer.checked });
+});
+
+browser.permissions.onRemoved.addListener(loadShowTimer);
+loadShowTimer();
+
 selectRange(selectedDomain ? 'btn-last-week' : 'btn-today');

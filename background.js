@@ -129,11 +129,53 @@ browser.runtime.onMessage.addListener((msg) => {
   }
 });
 
-browser.storage.onChanged.addListener(async (changes, area) => {
-  if (area !== 'local' || !('isShowTimer' in changes)) return;
-  if (changes.isShowTimer.newValue) {
+const ALL_SITES = { origins: ['*://*/*'] };
+const TIMER_SCRIPT = { id: 'timer', matches: ['*://*/*'], js: ['content.js'], runAt: 'document_end' };
+
+// The timer script is registered only while the timer is on and site access
+// is granted. A manifest content script would make Firefox flag every site as
+// requesting access, even with the timer off.
+async function doSyncTimerScript() {
+  const { isShowTimer } = await browser.storage.local.get('isShowTimer');
+  const wanted = Boolean(isShowTimer) && (await browser.permissions.contains(ALL_SITES));
+  const registered = (await browser.scripting.getRegisteredContentScripts({ ids: [TIMER_SCRIPT.id] })).length > 0;
+
+  if (wanted && !registered) {
+    await browser.scripting.registerContentScripts([TIMER_SCRIPT]);
+    // Registered scripts only reach pages loaded afterwards.
+    for (const tab of await browser.tabs.query({ url: '*://*/*' })) {
+      browser.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] }).catch(() => {});
+    }
     checkpoint();
-  } else {
+  } else if (!wanted && registered) {
+    await browser.scripting.unregisterContentScripts({ ids: [TIMER_SCRIPT.id] });
     for (const tab of await browser.tabs.query({})) send(tab.id, { subject: 'hideTimer' });
   }
+}
+
+let timerSync = Promise.resolve();
+function syncTimerScript() {
+  timerSync = timerSync.then(doSyncTimerScript).catch((e) => console.error('timer sync failed', e));
+}
+
+browser.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && 'isShowTimer' in changes) syncTimerScript();
+});
+browser.permissions.onAdded.addListener(syncTimerScript);
+browser.permissions.onRemoved.addListener(syncTimerScript);
+browser.runtime.onStartup.addListener(syncTimerScript);
+browser.runtime.onInstalled.addListener(syncTimerScript);
+
+const REPORT_URL = browser.runtime.getURL('pages/report.html');
+
+// Focuses an open report tab, or opens a new one.
+browser.action.onClicked.addListener(async () => {
+  const tabs = await browser.tabs.query({});
+  const tab = tabs.find((t) => t.url?.startsWith(REPORT_URL));
+  if (!tab) {
+    browser.tabs.create({ url: REPORT_URL });
+    return;
+  }
+  browser.tabs.update(tab.id, { active: true });
+  browser.windows.update(tab.windowId, { focused: true });
 });

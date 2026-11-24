@@ -1,5 +1,5 @@
 {
-  "name": "insight-ng",
+  "name": "firefox-insight",
   "private": true,
   "scripts": {
     "start": "web-ext run",

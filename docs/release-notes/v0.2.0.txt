@@ -1,0 +1,4 @@
+- The toolbar icon opens the report directly.
+- The "Show timer on pages" switch is in the report header. The settings page is removed.
+- The timer asks for access to all websites when you turn it on. With the timer off, the add-on has no website access.
+- The report follows the browser's dark theme.

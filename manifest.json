@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Insight NG",
-  "description": "Tracks the time you spend on websites, locally in your browser.",
-  "homepage_url": "https://github.com/probecat/insight-ng",
-  "version": "0.1.0",
+  "description": "Know how you spend your time online. 100% local and private.",
+  "homepage_url": "https://github.com/probecat/firefox-insight",
+  "version": "0.2.0",
   "browser_specific_settings": {
     "gecko": {
       "id": "insight-ng@kobioxide.gmail.com",
@@ -19,19 +19,12 @@
   },
   "action": {
     "default_title": "Insight",
-    "default_popup": "pages/popup.html",
     "default_icon": "icons/icon.svg"
   },
   "background": {
     "scripts": ["background.js"],
     "type": "module"
   },
-  "permissions": ["tabs", "storage", "idle", "alarms"],
-  "content_scripts": [
-    {
-      "matches": ["*://*/*"],
-      "run_at": "document_end",
-      "js": ["content.js"]
-    }
-  ]
+  "permissions": ["tabs", "storage", "idle", "alarms", "scripting"],
+  "optional_host_permissions": ["*://*/*"]
 }

@@ -3,6 +3,10 @@
 // locally every second until told to pause.
 
 (() => {
+  // The background can inject this script again into a tab that already has it.
+  if (globalThis.insightTimerLoaded) return;
+  globalThis.insightTimerLoaded = true;
+
   let host = null;
   let tick = null;
 

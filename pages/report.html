@@ -2,15 +2,22 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Insight Report</title>
-  <link rel="stylesheet" href="base.css">
   <link rel="stylesheet" href="report.css">
   <script type="module" src="report.js"></script>
 </head>
 <body>
   <div class="header">
-    <div class="container"><img src="/icons/icon.svg" alt="">Insight</div>
+    <div class="container header-row">
+      <span><img src="/icons/icon.svg" alt="">Insight</span>
+      <label class="timer-toggle" title="Display a timer for time spent on websites">
+        Show timer on pages
+        <input type="checkbox" id="show-timer" role="switch">
+        <span class="switch"></span>
+      </label>
+    </div>
   </div>
 
   <div class="container">
