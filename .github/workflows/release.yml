@@ -1,0 +1,128 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts
+
+      - name: Check tag matches manifest version
+        run: |
+          version=$(node -p 'require("./manifest.json").version')
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match manifest version $version"
+            exit 1
+          fi
+
+      - name: Check release notes exist
+        run: |
+          if [ ! -s "docs/release-notes/$GITHUB_REF_NAME.txt" ]; then
+            echo "::error::Missing docs/release-notes/$GITHUB_REF_NAME.txt"
+            exit 1
+          fi
+
+      - run: npm run check
+      - run: npm run build
+
+      - name: List package contents
+        run: unzip -Z1 web-ext-artifacts/*.zip
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: unsigned
+          path: web-ext-artifacts/*.zip
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: docs/release-notes
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: unsigned
+          path: unsigned
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" unsigned/*.zip \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$GITHUB_REF_NAME" \
+            --notes "$(cat "docs/release-notes/$GITHUB_REF_NAME.txt")
+
+          The .zip is the unsigned build, as submitted to AMO. Install from Firefox Add-ons, or use the signed .xpi once attached."
+
+  sign:
+    needs: release
+    runs-on: ubuntu-latest
+    environment: amo
+    permissions:
+      contents: read
+    env:
+      HAS_AMO_KEYS: ${{ secrets.AMO_JWT_ISSUER != '' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - run: npm ci --ignore-scripts
+
+      - name: Submit to AMO and wait for signing
+        if: env.HAS_AMO_KEYS == 'true'
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.AMO_JWT_ISSUER }}
+          WEB_EXT_API_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        # Metadata goes in RUNNER_TEMP so web-ext doesn't package it
+        run: |
+          jq -n --rawfile notes "docs/release-notes/$GITHUB_REF_NAME.txt" \
+            '{version: {release_notes: {"en-US": ($notes | trim)}}}' > "$RUNNER_TEMP/amo-metadata.json"
+          npx --no-install web-ext sign --channel listed --artifacts-dir signed --approval-timeout 1800000 --amo-metadata "$RUNNER_TEMP/amo-metadata.json"
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: signed
+          path: signed/*.xpi
+          if-no-files-found: ignore
+
+  attach:
+    needs: sign
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: signed
+          path: signed
+        continue-on-error: true
+
+      - name: Attach signed XPI
+        if: hashFiles('signed/*.xpi') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" signed/*.xpi --repo "$GITHUB_REPOSITORY"

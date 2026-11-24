@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Insight NG",
+  "description": "Tracks the time you spend on websites, locally in your browser.",
+  "homepage_url": "https://github.com/probecat/insight-ng",
+  "version": "0.1.0",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "insight-ng@kobioxide.gmail.com",
+      "strict_min_version": "142.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+  "icons": {
+    "48": "icons/icon.svg",
+    "96": "icons/icon.svg"
+  },
+  "action": {
+    "default_title": "Insight",
+    "default_popup": "pages/popup.html",
+    "default_icon": "icons/icon.svg"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "type": "module"
+  },
+  "permissions": ["tabs", "storage", "idle", "alarms"],
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "run_at": "document_end",
+      "js": ["content.js"]
+    }
+  ]
+}

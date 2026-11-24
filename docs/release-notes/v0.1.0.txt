@@ -1,0 +1,2 @@
+- First release: a lightweight rework of Insight that tracks the time you spend on websites, locally in your browser.
+- Manifest V3; no third-party libraries, analytics, or error reporting.

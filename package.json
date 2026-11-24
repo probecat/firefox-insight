@@ -1,0 +1,14 @@
+{
+  "name": "insight-ng",
+  "private": true,
+  "scripts": {
+    "start": "web-ext run",
+    "lint": "web-ext lint",
+    "check": "web-ext lint --warnings-as-errors",
+    "build": "web-ext build --overwrite-dest",
+    "prepare": "git config core.hooksPath .githooks"
+  },
+  "devDependencies": {
+    "web-ext": "10.7.0"
+  }
+}

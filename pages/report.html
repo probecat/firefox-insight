@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insight Report</title>
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="report.css">
+  <script type="module" src="report.js"></script>
+</head>
+<body>
+  <div class="header">
+    <div class="container"><img src="/icons/icon.svg" alt="">Insight</div>
+  </div>
+
+  <div class="container">
+    <div class="report-filter">
+      <strong>View Time Spent:</strong>
+      <button id="btn-today" class="selected">Today</button>
+      <button id="btn-yesterday">Yesterday</button>
+      <button id="btn-this-week">This Week</button>
+      <button id="btn-last-week">Last Week</button>
+      <button id="btn-custom">Custom</button>
+    </div>
+    <div id="custom-filter" class="custom-filter hidden">
+      <span>Date From: <input type="date" id="report-date-from"></span>
+      <span>Date To: <input type="date" id="report-date-to"></span>
+      <span id="report-limit-wrapper">
+        Limit results to: <input type="number" id="report-limit" value="11" min="0" max="999">
+      </span>
+    </div>
+
+    <div id="total-time-wrapper">
+      <div id="time-message" class="hidden">
+        Total time spent<span id="total-time-domain"></span>: <span id="total-time"></span>
+      </div>
+      <div id="no-time-message" class="hidden">No time tracked for this period</div>
+    </div>
+
+    <div id="general-chart-wrapper" class="chart-wrapper hidden">
+      <div class="chart-title">Time spent on each site</div>
+      <ol id="general-chart"></ol>
+    </div>
+
+    <div id="detailed-chart-wrapper" class="chart-wrapper hidden">
+      <a href="" id="show-general-report">&laquo; Back to overview</a>
+      <div class="chart-title" id="detailed-title"></div>
+      <div id="detailed-chart"></div>
+      <div id="exclude-domain-wrapper">
+        <a id="btn-exclude-domain" href="">exclude <span id="excluded-domain"></span> from report</a>
+      </div>
+    </div>
+
+    <div id="no-data-message" class="hidden">
+      Nothing was tracked for the time period you selected. Please choose another time period.
+    </div>
+  </div>
+</body>
+</html>

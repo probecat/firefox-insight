@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Insight Settings</title>
+  <link rel="stylesheet" href="base.css">
+  <style>
+    .row {
+      display: flex;
+      gap: 40px;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--green);
+      padding: 20px 0 10px;
+    }
+    .title-col { max-width: 300px; }
+    .config-title {
+      color: var(--green);
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .form-message {
+      display: inline-block;
+      vertical-align: super;
+      margin-left: 15px;
+      color: #4d8641;
+    }
+
+    /* toggle switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 56px;
+      height: 30px;
+      margin-top: 5px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      inset: 0;
+      cursor: pointer;
+      background: #ccc;
+      border-radius: 34px;
+      transition: .4s;
+    }
+    .slider::before {
+      content: "";
+      position: absolute;
+      height: 22px;
+      width: 22px;
+      left: 4px;
+      bottom: 4px;
+      background: #fff;
+      border-radius: 50%;
+      transition: .4s;
+    }
+    input:checked + .slider { background: var(--green); }
+    input:focus-visible + .slider { box-shadow: 0 0 0 2px var(--green); }
+    input:checked + .slider::before { transform: translateX(26px); }
+  </style>
+  <script type="module" src="settings.js"></script>
+</head>
+<body>
+  <div class="header">
+    <div class="container"><img src="/icons/icon.svg" alt="">Insight settings</div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="title-col">
+        <div class="config-title">Show timer</div>
+        Display a timer for time spent on websites
+      </div>
+      <div>
+        <label class="switch">
+          <input type="checkbox" id="insight-timer">
+          <span class="slider"></span>
+        </label>
+        <div class="form-message" id="insight-timer-form-message"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
