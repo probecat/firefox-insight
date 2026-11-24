@@ -1,6 +1,6 @@
 # Insight NG
 
-[![Build][build-image]][build-url] [![Version][version-image]][release-url]
+[![Build][build-image]][build-url] [![Version][version-image]][release-url] [![License][license-image]][license-url]
 
 [![Get the add-on for Firefox](docs/get-the-addon.svg)](https://addons.mozilla.org/firefox/addon/insight-ng/)
 
@@ -19,6 +19,10 @@ Insight NG is a Manifest V3 rework of the Insight add-on, which has had no updat
 - Fewer permissions by default. "Access data for all sites" only if you grant it for the timer overlay.
 - Conveniences: dark theme (follows browser theme), simpler controls, and bug fixes.
 
+## License
+
+[MIT](LICENSE)
+
 ## Disclaimer
 
 Not created by, affiliated with, or supported by Freedom.
@@ -27,3 +31,5 @@ Not created by, affiliated with, or supported by Freedom.
 [build-image]: https://img.shields.io/github/actions/workflow/status/probecat/firefox-insight/ci.yml?branch=main
 [release-url]: https://github.com/probecat/firefox-insight/releases/latest
 [version-image]: https://img.shields.io/github/v/release/probecat/firefox-insight?label=version
+[license-url]: LICENSE
+[license-image]: https://img.shields.io/github/license/probecat/firefox-insight
