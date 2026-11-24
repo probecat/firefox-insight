@@ -12,12 +12,12 @@ Insight NG tracks how much time you spend on each website and shows it as a dail
 
 ## Differences from Insight
 
-Insight NG is a Manifest V3 rework of the Insight add-on, which has had no update since 2020.
+Insight NG is a Manifest V3 rework of *Insight by Freedom*, which has had no update since 2020.
 
-- Low footprint: 99% smaller than the original.
-- Removed third-party libraries, analytics, error reporting, "leave a rating" pitch, survey form.
-- Fewer permissions by default. "Access data for all sites" only if you grant it for the timer overlay.
-- Conveniences: dark theme (follows browser theme), simpler controls, and bug fixes.
+- **Low footprint:** 99% smaller than the original.
+- **Zero bloat:** removed third-party libraries, analytics, error reporting, "leave a rating" pitch, and uninstall survey.
+- **Fewer permissions:** "Access your data for all websites" is requested only if you turn on the timer overlay.
+- **Conveniences:** dark theme, simpler controls, and bug fixes.
 
 ## License
 
